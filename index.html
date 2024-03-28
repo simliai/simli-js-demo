@@ -1,5 +1,4 @@
 <html>
-  <script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
   <body>
     <script>
       async function startSession() {
@@ -8,7 +7,7 @@
 
         // Define the request body
         request_body = {
-          apiKey: "YOUR_API_KEY", //Get your Simli API key from ( https://www.simli.com/sign-up-in )
+          apiKey: "YOUR-API-KEY", //Get your Simli API key from ( https://www.simli.com/sign-up-in )
           faceId: "tmp9i8bbq7c",
           intro: "Hey, how are you.",
           prompt:
@@ -44,15 +43,47 @@
         }
       }
 
-      async function joinCall() {
+      // Create the Simli iframe
+      async function createSimliFrame(sessionId) {
+        // Create the Simli iframe
+        const simliFrame = document.createElement("iframe");
+        // Allow microphone, camera, and speaker access
+        simliFrame.allow = "microphone; camera; speaker";
+        // Set the source of the iframe to the Simli session URL
+        simliFrame.src = "https://www.simli.com/session/"+sessionId;
+        simliFrame.className = "simli-iframe";
+        document.body.appendChild(simliFrame);
+      }
+      
+      // Join the session URL
+      async function joinSession() {
         // Start the session
         const response = await startSession();
-        call = window.Daily.createFrame();
-        call.join({ url: response.meetingUrl });
+        // Last 15 digits of the response.meetingUrl is the sessionId
+        const sessionId = response.meetingUrl.slice(-15);
+        // Create the Simli iframe
+        createSimliFrame(sessionId);
       }
 
-      // Start the session and join the call
-      joinCall();
+      // Call the joinSession function to start the session
+      joinSession();
+
     </script>
   </body>
+  <style>
+    body {
+      background-color: rgb(255, 255, 255);
+    }
+
+    .simli-iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      border: none;
+    }
+  </style>
 </html>
