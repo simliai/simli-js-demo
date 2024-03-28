@@ -8,13 +8,17 @@ This demo shows how to:
 - Creating an Iframe
 - Joining the session
 
+## Preview
+
+![preview](https://github.com/simliai/simli-api-demo/blob/main/preview.PNG?raw=true)
+
 ## Prerequisites
 
 You will need a Simli account to test out sessions. You can sign up at [https://www.simli.com/sign-up-in](https://www.simli.com/sign-up-in)
 
 ## Usage
 
-Insert your API key and refresh to start a new session:
+Insert your API key in the request body and refresh to start a new session:
 
 ```bash
 apiKey: "YOUR-API-KEY",
