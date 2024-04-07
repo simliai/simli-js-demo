@@ -1,89 +1,70 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Simli Session Example</title>
+    <link href="style.css" rel="stylesheet" />
+  </head>
   <body>
-    <script>
-      async function startSession() {
-        // Define the Simli API URL
-        api_url = "http://35.214.172.224:8080/startSession";
+    
+    <div>
 
-        // Define the request body
-        request_body = {
-          apiKey: "YOUR-API-KEY", //Get your Simli API key from ( https://www.simli.com/sign-up-in )
-          faceId: "tmp9i8bbq7c",
-          intro: "Hey, how are you.",
-          prompt:
-            "Compose dialogue for a character named Jenna, an AI character that has come alive on and is reperesented in visual form as an attractive 40 year old woman. Each of Jenna's responses should start with a short, standalone opening phrase, strictly limited to no more than 4 words.\nThe phrase following this opener should be brief, continuing or initiating a new thought without leading punctuation from the opener. This sentence should be concise, with any additional sentences being slightly longer but not exceeding 10 words, allowing Jenna to humorously interact with the users in the meeting.\n\nRemember, Jenna's dialogue must abide by the format rules in every speaking turn:\n- A short non-content opener, ending with a full stop, exclamation mark, or question mark.\n- The second sentence should be quite short as well, and any additional following sentences can be a bit longer, further developing his point.\n\nInclude an example dialogue to illustrate the expected structure of Jenna's lines. For instance:\n\n'Example of Jenna's dialogue pattern:\nJenna: Hi there What's this? A meeting?\nJenna: Oh hold on let me wait for the next token",
-          timeLimit: {
-            limit: 60,
-          },
-          userName: "Johnny",
-          voiceId: "21m00Tcm4TlvDq8ikWAM",
-        };
+      <div class="layout">
+        <div class="settings">
+          <p>Simli API Key</p>
+            <input type="text" id="api-key" size="50" placeholder="****************" />
+          <p>Username</p>
+            <input type="text" id="user-name" size="50" placeholder="John Doe" />
+            <p>Time Limit</p>
+            <input type="text" id="time-limit" size="50" placeholder="100" />
+            <div class="controls">
+          <select id="face-id">
+            <option value="" disabled selected>Select a faceId</option>
+          </select>
+          <select id="voice-id">
+            <option value="" disabled selected>Select a voiceId</option>
+          </select>
+          </div>
+            <p>Intro</p>
+            <input type="text" id="intro" size="50" placeholder="Hey, how are you." />
+            <p>Prompt</p>
+            <textarea type="text" id="prompt" size="50" placeholder="Compose dialogue for a character named Jenna, an AI character that has come alive on and is reperesented in visual form as an attractive 40 year old woman. Each of Jenna's responses should start with a short, standalone opening phrase, strictly limited to no more than 4 words.\nThe phrase following this opener should be brief, continuing or initiating a new thought without leading punctuation from the opener. This sentence should be concise, with any additional sentences being slightly longer but not exceeding 10 words, allowing Jenna to humorously interact with the users in the meeting.\n\nRemember, Jenna's dialogue must abide by the format rules in every speaking turn:\n- A short non-content opener, ending with a full stop, exclamation mark, or question mark.\n- The second sentence should be quite short as well, and any additional following sentences can be a bit longer, further developing his point.\n\nInclude an example dialogue to illustrate the expected structure of Jenna's lines. For instance:\n\n'Example of Jenna's dialogue pattern:\nJenna: Hi there What's this? A meeting?\nJenna: Oh hold on let me wait for the next token"></textarea>
+            <button id="start-btn">Start Session</button>
+            <div id="error"></div>
+        </div>
 
-        // Make a POST request to the Simli API to start the session
-        try {
-          const response = await fetch(api_url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(request_body),
-          });
+        <div class="video-settings">
+          <div id="videos">video</div>
 
-          // Handle error if request fails
-          if (!response.ok) {
-            throw new Error("Failed to start session");
-          }
+          <div class="settings">
 
-          // Return the response
-          return response.json();
-        } catch (error) {
-          // Handle error if request fails
-          console.error("Error starting session:", error);
-          throw error;
-        }
-      }
-
-      // Create the Simli iframe
-      async function createSimliFrame(sessionId) {
-        // Create the Simli iframe
-        const simliFrame = document.createElement("iframe");
-        // Allow microphone, camera, and speaker access
-        simliFrame.allow = "microphone; camera; speaker";
-        // Set the source of the iframe to the Simli session URL
-        simliFrame.src = "https://www.simli.com/session/"+sessionId;
-        simliFrame.className = "simli-iframe";
-        document.body.appendChild(simliFrame);
-      }
+            <button id="leave-btn" disabled>Leave</button>
       
-      // Join the session URL
-      async function joinSession() {
-        // Start the session
-        const response = await startSession();
-        // Last 15 digits of the response.meetingUrl is the sessionId
-        const sessionId = response.meetingUrl.slice(-15);
-        // Create the Simli iframe
-        createSimliFrame(sessionId);
-      }
+            <button id="toggle-camera" disabled="true">Toggle Camera</button>
+            <button id="toggle-mic" disabled="true">Toggle Microphone</button>
+            <div class="controls">
+            </div>
+        
+            <select id="camera-selector">
+              <option value="" disabled selected>Select a camera</option>
+            </select>
+            <select id="mic-selector">
+              <option value="" disabled selected>Select a microphone</option>
+            </select>
+        
+            <div id="status">
+              <div id="camera-state">Camera: Off</div>
+              <div id="mic-state">Mic: Off</div>
+              <div id="participant-count">Participants: 0</div>
+              <div id="active-speaker">Active Speaker: None</div>
+              <div id="app-message">App State: None</div>
+            </div>
+          </div>
+      
+        </div>
+      </div>
 
-      // Call the joinSession function to start the session
-      joinSession();
-
-    </script>
+    <script src="https://unpkg.com/@daily-co/daily-js"></script>
+    <script src="index.js"></script>
   </body>
-  <style>
-    body {
-      background-color: rgb(255, 255, 255);
-    }
-
-    .simli-iframe {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      transform: translate(-50%, -50%);
-      width: 500px;
-      height: 500px;
-      border: none;
-    }
-  </style>
 </html>
