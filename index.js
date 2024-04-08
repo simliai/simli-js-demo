@@ -207,13 +207,13 @@ class CallManager {
     let currentAppState = 'None';
 
     if(event.data === 'ApplicationState: 0') {
-      currentAppState = 'Listening';
+      currentAppState = '👂 Listening 👂';
     }
     else if(event.data === 'ApplicationState: 1') {
-      currentAppState = 'Thinking';
+      currentAppState = '💡 Thinking 💡';
     }
     else if(event.data === 'ApplicationState: 2') {
-      currentAppState = 'Talking';
+      currentAppState = '💭 Talking 💭';
     }
     else{
       currentAppState = 'None';
