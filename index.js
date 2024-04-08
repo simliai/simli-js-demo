@@ -1,10 +1,9 @@
 /**
- * Initializes a new instance of the `DailyCallManager` class, creating
- * a Daily.co call object and setting initial states for camera and
- * microphone muting, as well as the current room URL. It then calls the
- * `initialize` method to set up event listeners and UI interactions.
+ * Initializes a new instance of the `CallManager` class, creating
+ * a Daily.co call object and setting initial states for the current room URL. 
+ * It then calls the `initialize` method to set up event listeners and UI interactions.
  */
-class DailyCallManager {
+class CallManager {
   constructor() {
     this.call = Daily.createCallObject();
     this.currentRoomUrl = null;
@@ -16,12 +15,6 @@ class DailyCallManager {
    */
   async initialize() {
     this.setupEventListeners();
-    document
-      .getElementById('toggle-camera')
-      .addEventListener('click', () => this.toggleCamera());
-    document
-      .getElementById('toggle-mic')
-      .addEventListener('click', () => this.toggleMicrophone());
   }
 
   /**
@@ -47,7 +40,7 @@ class DailyCallManager {
   /**
    * Handler for the local participant joining:
    * - Prints the room URL
-   * - Enables the toggle camera, toggle mic, and leave buttons
+   * - Enables the toggle leave button
    * - Gets the initial track states
    * - Sets up and enables the device selectors
    * @param {Object} event - The joined-meeting event object.
@@ -60,17 +53,11 @@ class DailyCallManager {
     // Update the participant count
     this.updateAndDisplayParticipantCount();
 
+    // Show video-settings class
+    document.getElementById('video-settings').style.display = 'flex';
+
     // Enable the leave button
     document.getElementById('leave-btn').disabled = false;
-
-    // Enable the toggle camera and mic buttons and selectors
-    document.getElementById('toggle-camera').disabled = false;
-    document.getElementById('toggle-mic').disabled = false;
-    document.getElementById('camera-selector').disabled = false;
-    document.getElementById('mic-selector').disabled = false;
-
-    // Set up the camera and mic selectors
-    this.setupDeviceSelectors();
 
     // Initialize the camera and microphone states and UI for the local
     // participant
@@ -82,8 +69,6 @@ class DailyCallManager {
   /**
    * Handler for participant leave events:
    * - Confirms leaving with a console message
-   * - Disable the toggle camera and mic buttons
-   * - Resets the camera and mic selectors
    * - Updates the call state in the UI
    * - Removes all video containers
    */
@@ -93,18 +78,6 @@ class DailyCallManager {
     // Update the join and leave button states
     document.getElementById('leave-btn').disabled = true;
     document.getElementById('start-btn').disabled = false;
-
-    // Disable the toggle camera and mic buttons
-    document.getElementById('toggle-camera').disabled = true;
-    document.getElementById('toggle-mic').disabled = true;
-
-    // Reset and disable the camera and mic selectors
-    const cameraSelector = document.getElementById('camera-selector');
-    const micSelector = document.getElementById('mic-selector');
-    cameraSelector.selectedIndex = 0;
-    micSelector.selectedIndex = 0;
-    cameraSelector.disabled = true;
-    micSelector.disabled = true;
 
     // Update the call state in the UI
     document.getElementById('camera-state').textContent = 'Camera: Off';
@@ -124,6 +97,9 @@ class DailyCallManager {
     while (videosDiv.firstChild) {
       videosDiv.removeChild(videosDiv.firstChild);
     }
+
+    // Hide video-settings class
+    document.getElementById('video-settings').style.display = 'none';
   }
 
   /**
@@ -429,19 +405,6 @@ class DailyCallManager {
     });
   }
 
-  /**
-   * Toggles the local video track's mute state.
-   */
-  toggleCamera() {
-    this.call.setLocalVideo(!this.call.localVideo());
-  }
-
-  /**
-   * Toggles the local audio track's mute state.
-   */
-  toggleMicrophone() {
-    this.call.setLocalAudio(!this.call.localAudio());
-  }
 
   /**
    * Updates the UI to reflect the current states of the local participant's
@@ -462,65 +425,6 @@ class DailyCallManager {
         this.call.localAudio() ? 'On' : 'Off'
       }`;
     }
-  }
-
-  /**
-   * Sets up device selectors for cameras and microphones by dynamically
-   * populating them with available devices and attaching event listeners to
-   * handle device selection changes.
-   */
-  async setupDeviceSelectors() {
-    // Fetch current input devices settings and an array of available devices.
-    const selectedDevices = await this.call.getInputDevices();
-    const { devices: allDevices } = await this.call.enumerateDevices();
-
-    // Element references for camera and microphone selectors.
-    const selectors = {
-      videoinput: document.getElementById('camera-selector'),
-      audioinput: document.getElementById('mic-selector'),
-    };
-
-    // Prepare selectors by clearing existing options and adding a
-    // non-selectable prompt.
-    Object.values(selectors).forEach((selector) => {
-      selector.innerHTML = '';
-      const promptOption = new Option(
-        `Select a ${selector.id.includes('camera') ? 'camera' : 'microphone'}`,
-        '',
-        true,
-        true
-      );
-      promptOption.disabled = true;
-      selector.appendChild(promptOption);
-    });
-
-    // Create and append options to the selectors based on available devices.
-    allDevices.forEach((device) => {
-      if (device.label && selectors[device.kind]) {
-        const isSelected =
-          selectedDevices[device.kind === 'videoinput' ? 'camera' : 'mic']
-            .deviceId === device.deviceId;
-        const option = new Option(
-          device.label,
-          device.deviceId,
-          isSelected,
-          isSelected
-        );
-        selectors[device.kind].appendChild(option);
-      }
-    });
-
-    // Listen for user device change requests.
-    Object.entries(selectors).forEach(([deviceKind, selector]) => {
-      selector.addEventListener('change', async (e) => {
-        const deviceId = e.target.value;
-        const deviceOptions = {
-          [deviceKind === 'videoinput' ? 'videoDeviceId' : 'audioDeviceId']:
-            deviceId,
-        };
-        await this.call.setInputDevicesAsync(deviceOptions);
-      });
-    });
   }
 
   /**
@@ -546,31 +450,60 @@ class DailyCallManager {
       document.querySelectorAll('#videos video, audio').forEach((el) => {
         el.srcObject = null; // Release media resources
         el.remove(); // Remove the element from the DOM
+        // Remove the video container if it exists
+        const videoContainer = document.getElementById(
+          `video-container-${el.id.split('-')[1]}`
+        );
+        if (videoContainer) {
+          videoContainer.remove();
+        }
       });
     } catch (e) {
       console.error('Leaving failed', e);
     }
   }
 
+
+  /**
+   * Creating a session with Simli API to start a conversation.
+   */
   async createSession() {
     // Define the Simli API URL
     const api_url = "http://35.214.172.224:8080/startSession";
   
     // Get API key from document
     const apiKey = document.getElementById("api-key").value;
+
+    // Get Face ID from document
+    const faceId = document.getElementById("face-id").value;
+
+    // Get Intro from document
+    const intro = document.getElementById("intro").value;
+
+    // Get prompt from document
+    const prompt = document.getElementById("prompt").value;
+
+    // Get Time Limit from document
+    const timeLimit = document.getElementById("time-limit").value;
+
+    // Get User Name from document
+    const userName = document.getElementById("user-name").value;
+
+    // Get Voice ID from document
+    const voiceId = document.getElementById("voice-id").value;
+
   
     // Define the request body
     const request_body = {
       apiKey: apiKey, //Get your Simli API key from ( https://www.simli.com/sign-up-in )
-      faceId: "tmp9i8bbq7c",
-      intro: "Hey, how are you.",
-      prompt:
-        "Compose dialogue for a character named Jenna, an AI character that has come alive on and is reperesented in visual form as an attractive 40 year old woman. Each of Jenna's responses should start with a short, standalone opening phrase, strictly limited to no more than 4 words.\nThe phrase following this opener should be brief, continuing or initiating a new thought without leading punctuation from the opener. This sentence should be concise, with any additional sentences being slightly longer but not exceeding 10 words, allowing Jenna to humorously interact with the users in the meeting.\n\nRemember, Jenna's dialogue must abide by the format rules in every speaking turn:\n- A short non-content opener, ending with a full stop, exclamation mark, or question mark.\n- The second sentence should be quite short as well, and any additional following sentences can be a bit longer, further developing his point.\n\nInclude an example dialogue to illustrate the expected structure of Jenna's lines. For instance:\n\n'Example of Jenna's dialogue pattern:\nJenna: Hi there What's this? A meeting?\nJenna: Oh hold on let me wait for the next token",
+      faceId: faceId,
+      intro: intro,
+      prompt: prompt,
       timeLimit: {
-        limit: 60,
+        limit: timeLimit,
       },
-      userName: "Johnny",
-      voiceId: "21m00Tcm4TlvDq8ikWAM",
+      userName: userName,
+      voiceId: voiceId,
     };
   
     // Make a POST request to the Simli API to start the session
@@ -609,7 +542,7 @@ class DailyCallManager {
  * loaded.
  */
 document.addEventListener('DOMContentLoaded', async () => {
-  const dailyCallManager = new DailyCallManager();
+  const callManager = new CallManager();
 
   // Bind the join call action to the join button.
   document
@@ -617,17 +550,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     .addEventListener('click', async function () {
 
       // Start the session
-      const response = await dailyCallManager.createSession();
+      const response = await callManager.createSession();
       
       // Get Daily call url
       const roomUrl = "https://simli-test.daily.co/" + response.meetingUrl.slice(-15);
 
-      await dailyCallManager.joinRoom(roomUrl);
+      await callManager.joinRoom(roomUrl);
     });
 
   // Bind the leave call action to the leave button.
   document.getElementById('leave-btn').addEventListener('click', function () {
-    dailyCallManager.leave();
+    callManager.leave();
   });
 });
 

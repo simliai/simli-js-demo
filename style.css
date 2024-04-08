@@ -1,11 +1,59 @@
-/* General styling for the body - sets the base font and margins for the page */
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: black;
-  color: white;
+/* Global styles for all elements */
+* {
+  font-size: 16px;
+  font-family: monospace;
 }
 
+/* Styles for the HTML element */
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Styles for the body element */
+body {
+  background-color: black;
+  color: white;
+  width: 100%;
+  height: 100%;
+}
+
+/* Styles for the main container */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+/* Layout container for prompt and video settings */
+.layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 1100px;
+  max-height: 900px;
+  gap: 16px;
+}
+
+/* Styles for paragraphs */
+p {
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Styles for headings */
+h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Styles for buttons */
 button {
   background-color: #0000FF;
   border: none;
@@ -17,7 +65,6 @@ button {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
   cursor: pointer;
 }
 
@@ -29,7 +76,7 @@ button:disabled {
 button:hover {
   background-color: #ffffff;
   border-radius: 0px;
-  color:black;
+  color: black;
   transition: all 0.2s ease-in-out;
 }
 
@@ -38,6 +85,7 @@ button:disabled:hover {
   color: white;
 }
 
+/* Styles for input fields */
 input {
   padding: 10px;
   font-size: 16px;
@@ -52,6 +100,7 @@ input:focus {
   border: 2px solid white;
 }
 
+/* Styles for select dropdowns */
 select {
   padding: 10px;
   font-size: 16px;
@@ -59,49 +108,50 @@ select {
   border: 2px solid #ffffff47;
   background-color: black;
   color: white;
-
-  width: 49.7%;
+  flex-grow: 1;
 }
 
+option {
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+}
+
+/* Styles for textareas */
 textarea {
   padding: 10px;
-  font-size: 16px;
+  font-size: 14px;
   border-radius: 5px;
   border: 2px solid #ffffff47;
   background-color: black;
   color: white;
-  height: 350px;
+  height: 400px;
 }
 
-.layout {
+/* Styles for the prompt settings container */
+.prompt-settings {
   display: flex;
-  width: 100%;
   height: 100%;
-  gap: 20px;
-}
-
-.settings {
-  display: flex;
-  width: 100%;
-  height: 100%;
+  width: 634px;
   flex-direction: column;
+  justify-content: space-between;
 }
 
+/* Styles for the video settings container */
 .video-settings {
-  display: flex;
-  justify-items: flex-end;
-  align-items: flex-end;
-  height: 1000px;
+  display: none;
+  height: 100%;
+  width: 450px;
+  justify-content: space-between;
   flex-direction: column;
 }
 
-/* Styles for controlling the layout and spacing of control buttons (e.g., 'Join', 'Leave', etc.) */
-.controls {
-  margin-top: 10px;
-  margin-bottom: 10px;
+/* Styles for the selectors container */
+.selectors {
+  display: flex;
+  gap: 8px;
 }
 
-/* Container for holding all video elements. It uses Flexbox for a flexible and responsive layout */
+/* Container for holding all video elements */
 #videos {
   display: flex;
   flex-wrap: wrap;
@@ -116,29 +166,39 @@ textarea {
   object-fit: cover;
 }
 
-/* Styling for the outer container of each video, providing a uniform appearance and layout */
+/* Styling for the outer container of each video */
 .video-container {
   position: relative;
   display: inline-block;
   background-color: lightgray;
-  padding: 0.5%; /* Adjusts size of video relatively */
+  padding: 0.5%;
   margin: 5px;
   aspect-ratio: 16 / 9;
   width: 100%;
 }
 
-/* Styles for displaying the session ID as an overlay on the bottom left corner of the video */
+/* Styles for displaying the session ID as an overlay */
 .session-id-overlay {
   position: absolute;
   left: 0;
   bottom: 0;
   padding: 5px;
   color: white;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  font-size: 0.8em; /* Adjust based on your UI requirements */
+  background-color: rgba(0, 0, 0, 0.5);
+  font-size: 0.8em;
 }
 
-/* Additional styling specifics for video elements, ensuring they fit well within their containers */
+/* Styles for the status display */
+#status {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+
+/* Additional styling specifics for video elements */
 .video-element {
   width: 100%;
   height: auto;
