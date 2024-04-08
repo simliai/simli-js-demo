@@ -10,7 +10,7 @@ This demo shows how to:
 
 ## Preview
 
-![preview](https://github.com/simliai/simli-api-demo/blob/main/preview.PNG?raw=true)
+![preview](https://github.com/simliai/simli-js-demo/blob/Basic/preview.PNG?raw=true)
 
 ## Prerequisites
 
