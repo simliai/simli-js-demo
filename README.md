@@ -12,7 +12,7 @@ This demo shows how to:
 
 ## Preview
 
-![preview](https://github.com/simliai/simli-api-demo/blob/main/preview.png?raw=true)
+![preview](https://github.com/simliai/simli-api-demo/blob/main/preview.gif?raw=true)
 
 ## Usage
 
